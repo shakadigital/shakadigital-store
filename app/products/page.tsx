@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useEffect } from "react"
 import { useSearchParams } from "next/navigation"
 import { Search, SlidersHorizontal, X } from "lucide-react"
 import { Input } from "@/components/ui/input"
@@ -8,9 +8,10 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ProductCard } from "@/components/product-card"
-import { mockProducts } from "@/lib/data"
+import { getProducts } from "@/lib/actions/products"
 import { getCategoryLabel } from "@/lib/utils"
 import type { ProductCategory } from "@/lib/types"
+import type { DbProduct } from "@/lib/db-types"
 
 const categories: ProductCategory[] = ["ebook", "template", "software", "course"]
 
@@ -21,40 +22,21 @@ export default function ProductsPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedCategory, setSelectedCategory] = useState<ProductCategory | "all">(initialCategory || "all")
   const [sortBy, setSortBy] = useState("newest")
+  const [products, setProducts] = useState<DbProduct[]>([])
+  const [isLoading, setIsLoading] = useState(true)
 
-  const filteredProducts = useMemo(() => {
-    let products = [...mockProducts]
-
-    if (searchQuery) {
-      products = products.filter(
-        (p) =>
-          p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          p.description.toLowerCase().includes(searchQuery.toLowerCase()),
-      )
+  useEffect(() => {
+    async function fetchProducts() {
+      setIsLoading(true)
+      const result = await getProducts({
+        category: selectedCategory !== "all" ? selectedCategory : undefined,
+        search: searchQuery || undefined,
+        sortBy,
+      })
+      if (result.success && result.data) setProducts(result.data)
+      setIsLoading(false)
     }
-
-    if (selectedCategory !== "all") {
-      products = products.filter((p) => p.category === selectedCategory)
-    }
-
-    switch (sortBy) {
-      case "price-low":
-        products.sort((a, b) => a.price - b.price)
-        break
-      case "price-high":
-        products.sort((a, b) => b.price - a.price)
-        break
-      case "popular":
-        products.sort((a, b) => b.downloads - a.downloads)
-        break
-      case "rating":
-        products.sort((a, b) => b.rating - a.rating)
-        break
-      default:
-        products.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-    }
-
-    return products
+    fetchProducts()
   }, [searchQuery, selectedCategory, sortBy])
 
   return (
@@ -84,9 +66,7 @@ export default function ProductsPage() {
             <SelectContent>
               <SelectItem value="all">Semua</SelectItem>
               {categories.map((cat) => (
-                <SelectItem key={cat} value={cat}>
-                  {getCategoryLabel(cat)}
-                </SelectItem>
+                <SelectItem key={cat} value={cat}>{getCategoryLabel(cat)}</SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -112,41 +92,37 @@ export default function ProductsPage() {
           {selectedCategory !== "all" && (
             <Badge variant="secondary" className="gap-1">
               {getCategoryLabel(selectedCategory)}
-              <button onClick={() => setSelectedCategory("all")}>
-                <X className="h-3 w-3" />
-              </button>
+              <button onClick={() => setSelectedCategory("all")}><X className="h-3 w-3" /></button>
             </Badge>
           )}
           {searchQuery && (
             <Badge variant="secondary" className="gap-1">
               &quot;{searchQuery}&quot;
-              <button onClick={() => setSearchQuery("")}>
-                <X className="h-3 w-3" />
-              </button>
+              <button onClick={() => setSearchQuery("")}><X className="h-3 w-3" /></button>
             </Badge>
           )}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              setSelectedCategory("all")
-              setSearchQuery("")
-            }}
-          >
+          <Button variant="ghost" size="sm" onClick={() => { setSelectedCategory("all"); setSearchQuery("") }}>
             Hapus semua
           </Button>
         </div>
       )}
 
-      {/* Results */}
       <div className="mb-4">
-        <p className="text-sm text-muted-foreground">Menampilkan {filteredProducts.length} produk</p>
+        <p className="text-sm text-muted-foreground">
+          {isLoading ? "Memuat produk..." : `Menampilkan ${products.length} produk`}
+        </p>
       </div>
 
-      {filteredProducts.length > 0 ? (
+      {isLoading ? (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {filteredProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} className="h-72 animate-pulse rounded-lg bg-muted" />
+          ))}
+        </div>
+      ) : products.length > 0 ? (
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {products.map((product) => (
+            <ProductCard key={product.id} product={product as any} />
           ))}
         </div>
       ) : (

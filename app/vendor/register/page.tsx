@@ -12,6 +12,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Checkbox } from "@/components/ui/checkbox"
+import { supabase } from "@/lib/db"
+import { registerVendor } from "@/lib/actions/vendors"
 
 const benefits = [
   "Jangkau ribuan pembeli potensial di seluruh Indonesia",
@@ -26,6 +28,7 @@ export default function VendorRegisterPage() {
   const [step, setStep] = useState(1)
   const [isLoading, setIsLoading] = useState(false)
   const [agreed, setAgreed] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const [formData, setFormData] = useState({
     storeName: "",
@@ -45,6 +48,7 @@ export default function VendorRegisterPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setError(null)
 
     if (!agreed) {
       alert("Anda harus menyetujui syarat dan ketentuan")
@@ -53,11 +57,39 @@ export default function VendorRegisterPage() {
 
     setIsLoading(true)
 
-    // Simulate registration
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+    try {
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: { data: { name: formData.name, role: "vendor" } },
+      })
 
-    setIsLoading(false)
-    setStep(3)
+      if (authError || !authData.user) {
+        setError(authError?.message ?? "Gagal membuat akun")
+        return
+      }
+
+      const result = await registerVendor({
+        userId: authData.user.id,
+        name: formData.storeName,
+        bio: formData.bio,
+        bankName: formData.bankName,
+        bankAccount: formData.bankAccount,
+        bankHolder: formData.bankHolder,
+      })
+
+      if (!result.success) {
+        setError(result.error ?? "Gagal mendaftarkan toko vendor")
+        return
+      }
+
+      setStep(3)
+    } catch (err) {
+      console.error(err)
+      setError("Terjadi kesalahan. Silakan coba lagi.")
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   if (step === 3) {
@@ -146,6 +178,11 @@ export default function VendorRegisterPage() {
 
             <form onSubmit={step === 2 ? handleSubmit : (e) => e.preventDefault()}>
               <CardContent className="space-y-4">
+                {error && (
+                  <div className="rounded-lg border border-destructive bg-destructive/10 p-3 text-sm text-destructive">
+                    {error}
+                  </div>
+                )}
                 {step === 1 ? (
                   <>
                     <div className="space-y-2">

@@ -3,6 +3,47 @@
 import { supabaseAdmin } from "@/lib/db"
 import type { DbVendor } from "@/lib/db-types"
 
+export async function registerVendor({
+  userId,
+  name,
+  bio,
+  bankName,
+  bankAccount,
+  bankHolder,
+}: {
+  userId: string
+  name: string
+  bio?: string
+  bankName?: string
+  bankAccount?: string
+  bankHolder?: string
+}): Promise<{ success: boolean; vendorId?: string; error?: string }> {
+  try {
+    const { data, error } = await supabaseAdmin
+      .from("vendors")
+      .insert({
+        user_id: userId,
+        name,
+        bio: bio ?? null,
+        bank_name: bankName ?? null,
+        bank_account: bankAccount ?? null,
+        bank_holder: bankHolder ?? null,
+        total_products: 0,
+        total_sales: 0,
+        rating: 0,
+      })
+      .select("id")
+      .single()
+
+    if (error || !data) throw error
+
+    return { success: true, vendorId: data.id }
+  } catch (error) {
+    console.error("Error registering vendor:", error)
+    return { success: false, error: "Gagal mendaftarkan vendor" }
+  }
+}
+
 export async function getVendors() {
   try {
     const { data, error } = await supabaseAdmin
