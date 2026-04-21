@@ -28,6 +28,7 @@ import { supabase } from "@/lib/db"
 import { getOrdersByUser, uploadPaymentProof } from "@/lib/actions/orders"
 import { validateFile } from "@/lib/validation"
 import type { DbOrder, DbOrderItem } from "@/lib/db-types"
+import { useRouter } from "next/navigation"
 
 type OrderWithItems = DbOrder & { order_items: DbOrderItem[] }
 
@@ -40,6 +41,7 @@ const statusConfig = {
 
 export default function UserDashboardPage() {
   const user = useStore((state) => state.user)
+  const router = useRouter()
   const [activeTab, setActiveTab] = useState("purchases")
   const [orders, setOrders] = useState<OrderWithItems[]>([])
   const [loading, setLoading] = useState(true)
@@ -123,7 +125,7 @@ export default function UserDashboardPage() {
               <p className="text-sm text-muted-foreground">Member ShakaDigital</p>
             </div>
           </div>
-          <Button variant="outline" className="gap-2 bg-transparent">
+          <Button variant="outline" className="gap-2 bg-transparent" onClick={() => router.push("/dashboard/settings")}>
             <Settings className="h-4 w-4" />
             Pengaturan Akun
           </Button>
