@@ -1,13 +1,14 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { useRouter } from "next/navigation"
-import { ArrowLeft, Save, Loader2, Eye, EyeOff } from "lucide-react"
+import { ArrowLeft, Save, Loader2, Eye, EyeOff, Camera } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { ProtectedRoute } from "@/components/protected-route"
 import { useStore } from "@/lib/store"
 import { supabase } from "@/lib/db"
@@ -18,8 +19,11 @@ export default function AccountSettingsPage() {
   const setUser = useStore((state) => state.setUser)
 
   const [name, setName] = useState(user?.name ?? "")
+  const [avatarUrl, setAvatarUrl] = useState(user?.avatar ?? "")
   const [isSavingProfile, setIsSavingProfile] = useState(false)
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false)
   const [profileMsg, setProfileMsg] = useState<{ type: "success" | "error"; text: string } | null>(null)
+  const avatarInputRef = useRef<HTMLInputElement>(null)
 
   const [currentPassword, setCurrentPassword] = useState("")
   const [newPassword, setNewPassword] = useState("")
@@ -27,6 +31,53 @@ export default function AccountSettingsPage() {
   const [showNew, setShowNew] = useState(false)
   const [isSavingPassword, setIsSavingPassword] = useState(false)
   const [passwordMsg, setPasswordMsg] = useState<{ type: "success" | "error"; text: string } | null>(null)
+
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    if (!file.type.startsWith("image/")) {
+      setProfileMsg({ type: "error", text: "File harus berupa gambar (PNG, JPG, dll)" })
+      return
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      setProfileMsg({ type: "error", text: "Ukuran foto maksimal 2MB" })
+      return
+    }
+
+    setIsUploadingAvatar(true)
+    setProfileMsg(null)
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      const userId = session?.user?.id
+      if (!userId) throw new Error("Tidak terautentikasi")
+
+      const ext = file.name.split(".").pop()
+      const filePath = `${userId}/avatar.${ext}`
+
+      const { error: uploadError } = await supabase.storage
+        .from("avatars")
+        .upload(filePath, file, { upsert: true, cacheControl: "3600" })
+
+      if (uploadError) throw uploadError
+
+      const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(filePath)
+      const publicUrl = urlData.publicUrl + `?t=${Date.now()}` // bust cache
+
+      // Simpan ke auth metadata
+      await supabase.auth.updateUser({ data: { avatar: publicUrl } })
+
+      setAvatarUrl(publicUrl)
+      if (user) setUser({ ...user, avatar: publicUrl })
+      setProfileMsg({ type: "success", text: "Foto profil berhasil diperbarui" })
+    } catch (err: any) {
+      console.error(err)
+      setProfileMsg({ type: "error", text: err.message ?? "Gagal mengupload foto" })
+    } finally {
+      setIsUploadingAvatar(false)
+    }
+  }
 
   const handleSaveProfile = async () => {
     if (!name.trim()) return
@@ -47,7 +98,7 @@ export default function AccountSettingsPage() {
   const handleChangePassword = async () => {
     setPasswordMsg(null)
 
-    if (!newPassword || !confirmPassword) {
+    if (!currentPassword || !newPassword || !confirmPassword) {
       setPasswordMsg({ type: "error", text: "Mohon isi semua field password" })
       return
     }
@@ -62,7 +113,7 @@ export default function AccountSettingsPage() {
 
     setIsSavingPassword(true)
 
-    // Re-authenticate first
+    // Verifikasi password lama
     const { error: signInError } = await supabase.auth.signInWithPassword({
       email: user?.email ?? "",
       password: currentPassword,
@@ -101,14 +152,42 @@ export default function AccountSettingsPage() {
         <Card className="mb-6">
           <CardHeader>
             <CardTitle>Informasi Profil</CardTitle>
-            <CardDescription>Perbarui nama tampilan akun Anda</CardDescription>
+            <CardDescription>Perbarui foto dan nama tampilan akun Anda</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label>Email</Label>
-              <Input value={user?.email ?? ""} disabled className="bg-muted" />
-              <p className="text-xs text-muted-foreground">Email tidak dapat diubah</p>
+          <CardContent className="space-y-6">
+            {/* Avatar Upload */}
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                <Avatar className="h-20 w-20">
+                  <AvatarImage src={avatarUrl || "/placeholder-user.jpg"} alt={name} />
+                  <AvatarFallback className="text-2xl">{name?.[0]?.toUpperCase() ?? "U"}</AvatarFallback>
+                </Avatar>
+                <button
+                  type="button"
+                  onClick={() => avatarInputRef.current?.click()}
+                  disabled={isUploadingAvatar}
+                  className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-md hover:bg-primary/90 disabled:opacity-50"
+                >
+                  {isUploadingAvatar
+                    ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    : <Camera className="h-3.5 w-3.5" />
+                  }
+                </button>
+                <input
+                  ref={avatarInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleAvatarChange}
+                />
+              </div>
+              <div>
+                <p className="font-medium text-foreground">{name || "Pengguna"}</p>
+                <p className="text-sm text-muted-foreground">{user?.email}</p>
+                <p className="mt-1 text-xs text-muted-foreground">PNG, JPG maks 2MB</p>
+              </div>
             </div>
+
             <div className="space-y-2">
               <Label htmlFor="name">Nama</Label>
               <Input
@@ -118,6 +197,13 @@ export default function AccountSettingsPage() {
                 placeholder="Nama lengkap Anda"
               />
             </div>
+
+            <div className="space-y-2">
+              <Label>Email</Label>
+              <Input value={user?.email ?? ""} disabled className="bg-muted" />
+              <p className="text-xs text-muted-foreground">Email tidak dapat diubah</p>
+            </div>
+
             {profileMsg && (
               <p className={`text-sm ${profileMsg.type === "success" ? "text-emerald-600" : "text-destructive"}`}>
                 {profileMsg.text}
