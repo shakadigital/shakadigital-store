@@ -8,7 +8,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { ProtectedRoute } from "@/components/protected-route"
 import { useStore } from "@/lib/store"
 import { supabase } from "@/lib/db"
@@ -20,6 +19,7 @@ export default function AccountSettingsPage() {
 
   const [name, setName] = useState(user?.name ?? "")
   const [avatarUrl, setAvatarUrl] = useState(user?.avatar ?? "")
+  const [avatarKey, setAvatarKey] = useState(Date.now())
   const [isSavingProfile, setIsSavingProfile] = useState(false)
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false)
   const [profileMsg, setProfileMsg] = useState<{ type: "success" | "error"; text: string } | null>(null)
@@ -69,6 +69,7 @@ export default function AccountSettingsPage() {
       await supabase.auth.updateUser({ data: { avatar: publicUrl } })
 
       setAvatarUrl(publicUrl)
+      setAvatarKey(Date.now())
       if (user) setUser({ ...user, avatar: publicUrl })
       setProfileMsg({ type: "success", text: "Foto profil berhasil diperbarui" })
     } catch (err: any) {
@@ -158,10 +159,20 @@ export default function AccountSettingsPage() {
             {/* Avatar Upload */}
             <div className="flex items-center gap-4">
               <div className="relative">
-                <Avatar className="h-20 w-20">
-                  <AvatarImage src={avatarUrl || "/placeholder-user.jpg"} alt={name} />
-                  <AvatarFallback className="text-2xl">{name?.[0]?.toUpperCase() ?? "U"}</AvatarFallback>
-                </Avatar>
+                <div className="h-20 w-20 overflow-hidden rounded-full border-2 border-border bg-muted">
+                  {avatarUrl ? (
+                    <img
+                      key={avatarKey}
+                      src={avatarUrl}
+                      alt={name}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center text-2xl font-semibold text-muted-foreground">
+                      {name?.[0]?.toUpperCase() ?? "U"}
+                    </div>
+                  )}
+                </div>
                 <button
                   type="button"
                   onClick={() => avatarInputRef.current?.click()}
