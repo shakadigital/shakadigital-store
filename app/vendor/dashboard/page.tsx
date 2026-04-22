@@ -15,6 +15,7 @@ import {
   BarChart3,
   ShoppingBag,
   Loader2,
+  Settings,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -132,6 +133,12 @@ export default function VendorDashboardPage() {
               <Button variant="outline" className="gap-2 bg-transparent">
                 <BarChart3 className="h-4 w-4" />
                 Analytics
+              </Button>
+            </Link>
+            <Link href="/vendor/settings">
+              <Button variant="outline" className="gap-2 bg-transparent">
+                <Settings className="h-4 w-4" />
+                Pengaturan Toko
               </Button>
             </Link>
             <Link href="/vendor/upload">
