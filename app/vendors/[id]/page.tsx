@@ -4,7 +4,6 @@ import { use, useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Star, Package, ShoppingBag, Calendar, ArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { ProductCard } from "@/components/product-card"
 import { formatDate } from "@/lib/utils"
 import { getVendorById } from "@/lib/actions/vendors"
@@ -79,10 +78,15 @@ export default function VendorDetailPage({ params }: { params: Promise<{ id: str
       {/* Vendor Header */}
       <div className="mb-10 rounded-xl border border-border bg-card p-6 md:p-8">
         <div className="flex flex-col items-center gap-6 text-center md:flex-row md:text-left">
-          <Avatar className="h-24 w-24 md:h-32 md:w-32">
-            <AvatarImage src={vendor.avatar || "/placeholder.svg"} alt={vendor.name} />
-            <AvatarFallback className="text-3xl">{vendor.name[0]}</AvatarFallback>
-          </Avatar>
+          <div className="h-24 w-24 md:h-32 md:w-32 flex-shrink-0 overflow-hidden rounded-full bg-muted border border-border">
+            {vendor.avatar ? (
+              <img src={vendor.avatar} alt={vendor.name} className="h-full w-full object-cover" />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center text-4xl font-semibold text-muted-foreground">
+                {vendor.name[0]}
+              </div>
+            )}
+          </div>
 
           <div className="flex-1">
             <h1 className="text-3xl font-bold text-foreground">{vendor.name}</h1>

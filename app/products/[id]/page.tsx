@@ -9,13 +9,11 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useStore } from "@/lib/store"
 import { formatPrice, getCategoryLabel, formatDate } from "@/lib/utils"
 import { getProductById, getRelatedProducts } from "@/lib/actions/products"
 import { ProductCard } from "@/components/product-card"
 import type { DbProduct } from "@/lib/db-types"
-
 export default function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
   const router = useRouter()
@@ -145,10 +143,15 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
           {product.vendor_name && (
             <Card className="mt-6">
               <CardContent className="flex items-center gap-4 p-4">
-                <Avatar className="h-12 w-12">
-                  <AvatarImage src={product.vendor_avatar || "/placeholder.svg"} alt={product.vendor_name} />
-                  <AvatarFallback>{product.vendor_name[0]}</AvatarFallback>
-                </Avatar>
+                <div className="h-12 w-12 flex-shrink-0 overflow-hidden rounded-full bg-muted border border-border">
+                  {product.vendor_avatar ? (
+                    <img src={product.vendor_avatar} alt={product.vendor_name} className="h-full w-full object-cover" />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center text-lg font-semibold text-muted-foreground">
+                      {product.vendor_name[0]}
+                    </div>
+                  )}
+                </div>
                 <div className="flex-1">
                   <Link href={`/vendors/${product.vendor_id}`} className="font-semibold text-foreground hover:text-primary hover:underline">
                     {product.vendor_name}

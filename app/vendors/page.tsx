@@ -5,11 +5,9 @@ import Link from "next/link"
 import { Star, Package, ShoppingBag } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { formatDate } from "@/lib/utils"
 import { getVendors } from "@/lib/actions/vendors"
 import type { DbVendor } from "@/lib/db-types"
-
 export default function VendorsPage() {
   const [vendors, setVendors] = useState<DbVendor[]>([])
   const [loading, setLoading] = useState(true)
@@ -56,10 +54,15 @@ export default function VendorsPage() {
             <Card key={vendor.id} className="overflow-hidden transition-all hover:shadow-lg">
               <CardContent className="p-6">
                 <div className="flex flex-col items-center text-center">
-                  <Avatar className="h-20 w-20">
-                    <AvatarImage src={vendor.avatar || "/placeholder.svg"} alt={vendor.name} />
-                    <AvatarFallback className="text-2xl">{vendor.name[0]}</AvatarFallback>
-                  </Avatar>
+                  <div className="h-20 w-20 overflow-hidden rounded-full bg-muted border border-border">
+                    {vendor.avatar ? (
+                      <img src={vendor.avatar} alt={vendor.name} className="h-full w-full object-cover" />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center text-2xl font-semibold text-muted-foreground">
+                        {vendor.name[0]}
+                      </div>
+                    )}
+                  </div>
                   <h3 className="mt-4 text-xl font-semibold text-foreground">{vendor.name}</h3>
                   <p className="mt-2 text-sm text-muted-foreground">{vendor.bio}</p>
 
