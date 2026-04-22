@@ -20,7 +20,6 @@ const categories: { value: ProductCategory; label: string }[] = [
   { value: "ebook", label: "E-Book & PDF" },
   { value: "template", label: "Template & Desain" },
   { value: "software", label: "Software & Kode" },
-  { value: "course", label: "Kursus Online" },
 ]
 
 export default function UploadProductPage() {

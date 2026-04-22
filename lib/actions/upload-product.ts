@@ -64,7 +64,7 @@ interface ProductInput {
   title: string
   description: string
   price: number
-  category: "ebook" | "template" | "software" | "course"
+  category: "ebook" | "template" | "software"
   image?: string
   fileUrl?: string
   fileSize?: string

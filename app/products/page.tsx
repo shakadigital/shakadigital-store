@@ -13,7 +13,7 @@ import { getCategoryLabel } from "@/lib/utils"
 import type { ProductCategory } from "@/lib/types"
 import type { DbProduct } from "@/lib/db-types"
 
-const categories: ProductCategory[] = ["ebook", "template", "software", "course"]
+const categories: ProductCategory[] = ["ebook", "template", "software"]
 
 export default function ProductsPage() {
   const searchParams = useSearchParams()

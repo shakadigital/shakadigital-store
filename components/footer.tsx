@@ -12,8 +12,7 @@ export function Footer() {
               <span className="text-xl font-bold text-foreground">ShakaDigital</span>
             </Link>
             <p className="mt-4 text-sm text-muted-foreground">
-              Platform marketplace produk digital terpercaya di Indonesia. Jual beli e-book, template, software, dan
-              kursus online.
+              Platform marketplace produk digital terpercaya di Indonesia. Jual beli e-book, template, dan software.
             </p>
           </div>
 
@@ -33,11 +32,6 @@ export function Footer() {
               <li>
                 <Link href="/products?category=software" className="hover:text-primary">
                   Software & Kode
-                </Link>
-              </li>
-              <li>
-                <Link href="/products?category=course" className="hover:text-primary">
-                  Kursus Online
                 </Link>
               </li>
             </ul>

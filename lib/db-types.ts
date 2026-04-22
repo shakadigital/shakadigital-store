@@ -23,7 +23,7 @@ export interface DbProduct {
   title: string
   description: string | null
   price: number
-  category: "ebook" | "template" | "software" | "course"
+  category: "ebook" | "template" | "software"
   image: string | null
   file_url: string | null
   file_size: string | null

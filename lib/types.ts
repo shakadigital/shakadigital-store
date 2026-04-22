@@ -1,4 +1,4 @@
-export type ProductCategory = "ebook" | "template" | "software" | "course"
+export type ProductCategory = "ebook" | "template" | "software"
 
 export interface Product {
   id: string

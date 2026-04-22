@@ -11,7 +11,6 @@ const defaultCategories = [
   { category: "ebook" as const, label: "E-Book & PDF", description: "Buku digital & panduan", count: 0 },
   { category: "template" as const, label: "Template & Desain", description: "UI kit & grafis", count: 0 },
   { category: "software" as const, label: "Software & Kode", description: "Aplikasi & source code", count: 0 },
-  { category: "course" as const, label: "Kursus Online", description: "Video pembelajaran", count: 0 },
 ]
 
 export default async function HomePage() {

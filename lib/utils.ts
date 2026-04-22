@@ -20,7 +20,6 @@ export function getCategoryLabel(category: ProductCategory): string {
     ebook: "E-Book",
     template: "Template",
     software: "Software",
-    course: "Kursus",
   }
   return labels[category]
 }

@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { BookOpen, Palette, Code, GraduationCap } from "lucide-react"
+import { BookOpen, Palette, Code } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import type { ProductCategory } from "@/lib/types"
 
@@ -14,14 +14,12 @@ const categoryIcons = {
   ebook: BookOpen,
   template: Palette,
   software: Code,
-  course: GraduationCap,
 }
 
 const categoryColors = {
   ebook: "bg-blue-500/10 text-blue-600",
   template: "bg-pink-500/10 text-pink-600",
   software: "bg-emerald-500/10 text-emerald-600",
-  course: "bg-amber-500/10 text-amber-600",
 }
 
 export function CategoryCard({ category, label, description, count }: CategoryCardProps) {
