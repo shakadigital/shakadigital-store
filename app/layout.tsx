@@ -8,6 +8,7 @@ import { Footer } from "@/components/footer"
 import { ThemeProvider } from "@/components/theme-provider"
 import { AuthProvider } from "@/components/auth-provider"
 import { ServiceWorkerRegister } from "@/components/service-worker-register"
+import { ScrollRigProvider } from "@/components/scroll-rig-provider"
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-geist-sans" })
 const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono" })
@@ -82,9 +83,11 @@ export default function RootLayout({
       <body className={`${geist.variable} ${geistMono.variable} font-sans antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <AuthProvider>
-            <Navbar />
-            {children}
-            <Footer />
+            <ScrollRigProvider>
+              <Navbar />
+              {children}
+              <Footer />
+            </ScrollRigProvider>
             <Analytics />
             <ServiceWorkerRegister />
           </AuthProvider>

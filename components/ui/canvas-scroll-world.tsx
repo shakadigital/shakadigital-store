@@ -1,8 +1,9 @@
 "use client";
 
 import { useRef, useMemo, useEffect } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { useFrame } from "@react-three/fiber";
 import { Environment, Float, MeshTransmissionMaterial } from "@react-three/drei";
+import { UseCanvas } from "@14islands/r3f-scroll-rig";
 import * as THREE from "three";
 
 // A single floating glass card
@@ -104,10 +105,6 @@ function Scene() {
 
   return (
     <>
-      <ambientLight intensity={0.5} />
-      <directionalLight position={[10, 10, 5]} intensity={2} />
-      <pointLight position={[0, 0, 0]} intensity={2} color="#818cf8" />
-      
       <group ref={groupRef}>
         {cards.map((props, i) => (
           <GlassCard key={i} {...props} />
@@ -126,10 +123,6 @@ function Scene() {
           <pointsMaterial size={0.1} color="#ffffff" transparent opacity={0.4} />
         </points>
       </group>
-
-      <Environment preset="city" />
-      {/* Fog to hide the end of the tunnel */}
-      <fog attach="fog" args={["#09090b", 10, 60]} />
     </>
   );
 }
@@ -137,9 +130,9 @@ function Scene() {
 export function CanvasScrollWorld() {
   return (
     <div className="absolute inset-0 z-0 h-full w-full pointer-events-none bg-zinc-950">
-      <Canvas camera={{ position: [0, 0, 5], fov: 60 }} style={{ background: "transparent" }}>
+      <UseCanvas>
         <Scene />
-      </Canvas>
+      </UseCanvas>
     </div>
   );
 }
