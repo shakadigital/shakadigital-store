@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { ArrowRight, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { ContainerScroll } from "@/components/ui/container-scroll-animation"
 
 interface HeroSectionProps {
   stats?: {
@@ -12,66 +13,71 @@ interface HeroSectionProps {
 
 export function HeroSection({ stats }: HeroSectionProps) {
   return (
-    <section className="relative overflow-hidden">
-      <video
-        autoPlay
-        loop
-        muted
-        playsInline
-        className="absolute inset-0 z-0 h-full w-full object-cover"
+    <section className="relative overflow-hidden bg-background">
+      <ContainerScroll
+        titleComponent={
+          <>
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-medium text-primary">
+              <Sparkles className="h-4 w-4" />
+              Platform Marketplace Produk Digital #1 Indonesia
+            </div>
+            <h1 className="text-4xl font-bold tracking-tight text-foreground md:text-6xl max-w-4xl mx-auto mb-6">
+              Temukan & Jual Produk Digital <br />
+              <span className="text-4xl md:text-[6rem] font-bold mt-1 leading-none">
+                Berkualitas Tinggi
+              </span>
+            </h1>
+            <p className="max-w-2xl text-lg text-muted-foreground md:text-xl mx-auto mb-10">
+              Marketplace terpercaya untuk e-book, template, software, dan kursus online. Bergabung dengan ribuan kreator dan pembeli di seluruh Indonesia.
+            </p>
+            <div className="flex flex-col sm:flex-row justify-center gap-4 mb-8">
+              <Link href="/products">
+                <Button size="lg" className="gap-2">
+                  Jelajahi Produk
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </Link>
+              <Link href="/vendor/dashboard">
+                <Button size="lg" variant="outline">
+                  Mulai Berjualan
+                </Button>
+              </Link>
+            </div>
+            <div className="flex flex-wrap items-center justify-center gap-8 text-center mt-10 mb-4">
+              <div>
+                <p className="text-3xl font-bold text-foreground">
+                  {stats?.totalProducts ? `${stats.totalProducts.toLocaleString("id-ID")}+` : "10,000+"}
+                </p>
+                <p className="text-sm text-muted-foreground">Produk Digital</p>
+              </div>
+              <div className="h-12 w-px bg-border" />
+              <div>
+                <p className="text-3xl font-bold text-foreground">
+                  {stats?.totalVendors ? `${stats.totalVendors.toLocaleString("id-ID")}+` : "5,000+"}
+                </p>
+                <p className="text-sm text-muted-foreground">Kreator Aktif</p>
+              </div>
+              <div className="h-12 w-px bg-border" />
+              <div>
+                <p className="text-3xl font-bold text-foreground">
+                  {stats?.totalDownloads ? `${stats.totalDownloads.toLocaleString("id-ID")}+` : "50,000+"}
+                </p>
+                <p className="text-sm text-muted-foreground">Transaksi Sukses</p>
+              </div>
+            </div>
+          </>
+        }
       >
-        <source src="/assets/vid/conn1.mp4" type="video/mp4" />
-      </video>
-      <div className="relative z-10 mx-auto max-w-7xl px-4 py-20 md:py-32">
-        <div className="flex flex-col items-center text-center">
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/20 bg-black/40 px-4 py-2 text-sm font-medium text-white backdrop-blur-md">
-            <Sparkles className="h-4 w-4 text-green-400" />
-            Platform Marketplace Produk Digital #1 Indonesia
-          </div>
-          <h1 className="max-w-4xl text-balance text-4xl font-bold tracking-tight text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] md:text-6xl">
-            Temukan & Jual Produk Digital Berkualitas Tinggi
-          </h1>
-          <p className="mt-6 max-w-2xl text-pretty text-lg text-white/95 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] md:text-xl">
-            Marketplace terpercaya untuk e-book, template, software, dan kursus online. Bergabung dengan ribuan kreator
-            dan pembeli di seluruh Indonesia.
-          </p>
-          <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-            <Link href="/products">
-              <Button size="lg" className="gap-2 bg-green-600 text-white hover:bg-green-700 shadow-lg">
-                Jelajahi Produk
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
-            <Link href="/vendor/dashboard">
-              <Button size="lg" variant="outline" className="border-white/50 bg-black/40 text-white backdrop-blur-md hover:bg-black/60 hover:text-white shadow-lg">
-                Mulai Berjualan
-              </Button>
-            </Link>
-          </div>
-          <div className="mt-16 flex flex-wrap items-center justify-center gap-8 text-center drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
-            <div>
-              <p className="text-3xl font-bold text-white">
-                {stats?.totalProducts ? `${stats.totalProducts.toLocaleString("id-ID")}+` : "10,000+"}
-              </p>
-              <p className="text-sm text-white/80">Produk Digital</p>
-            </div>
-            <div className="h-12 w-px bg-white/30" />
-            <div>
-              <p className="text-3xl font-bold text-white">
-                {stats?.totalVendors ? `${stats.totalVendors.toLocaleString("id-ID")}+` : "5,000+"}
-              </p>
-              <p className="text-sm text-white/80">Kreator Aktif</p>
-            </div>
-            <div className="h-12 w-px bg-white/30" />
-            <div>
-              <p className="text-3xl font-bold text-white">
-                {stats?.totalDownloads ? `${stats.totalDownloads.toLocaleString("id-ID")}+` : "50,000+"}
-              </p>
-              <p className="text-sm text-white/80">Transaksi Sukses</p>
-            </div>
-          </div>
+        <div className="relative w-full h-full bg-background rounded-2xl overflow-hidden border border-border">
+          {/* We use scene1.png from the AI generated assets we saved earlier */}
+          <img
+            src="/assets/scene1.png"
+            alt="Marketplace Platform Preview"
+            className="w-full h-full object-cover rounded-2xl"
+            draggable={false}
+          />
         </div>
-      </div>
+      </ContainerScroll>
     </section>
   )
 }
