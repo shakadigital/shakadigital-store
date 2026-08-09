@@ -12,13 +12,13 @@ interface HeroSectionProps {
 
 export function HeroSection({ stats }: HeroSectionProps) {
   return (
-    <section className="relative overflow-hidden bg-background">
+    <section className="relative overflow-hidden">
       <video
         autoPlay
         loop
         muted
         playsInline
-        className="absolute inset-0 z-0 h-full w-full object-cover opacity-[0.15] dark:opacity-30"
+        className="absolute inset-0 z-0 h-full w-full object-cover"
       >
         <source src="/assets/vid/conn1.mp4" type="video/mp4" />
       </video>
