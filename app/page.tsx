@@ -7,11 +7,40 @@ import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
+import { ScrollStory } from "@/components/scroll-story/ScrollStory"
+
 const defaultCategories = [
   { category: "ebook" as const, label: "E-Book & PDF", description: "Buku digital & panduan", count: 0 },
   { category: "template" as const, label: "Template & Desain", description: "UI kit & grafis", count: 0 },
   { category: "software" as const, label: "Software & Kode", description: "Aplikasi & source code", count: 0 },
 ]
+
+const storyScenes = [
+  {
+    id: 1,
+    eyebrow: "KUALITAS TERBAIK",
+    title: "Kurasi Tingkat Tinggi.",
+    description: "Setiap produk digital di platform kami melewati proses kurasi ketat untuk memastikan standar tertinggi bagi proyek Anda.",
+    image: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop", 
+    label: "Kurasi"
+  },
+  {
+    id: 2,
+    eyebrow: "KREATOR LOKAL",
+    title: "Karya Anak Bangsa.",
+    description: "Mendukung ekosistem kreator lokal Indonesia. Dari template presentasi hingga source code aplikasi kompleks.",
+    image: "https://images.unsplash.com/photo-1558655146-d09347e92766?q=80&w=2664&auto=format&fit=crop", 
+    label: "Kreator"
+  },
+  {
+    id: 3,
+    eyebrow: "AKSES INSTAN",
+    title: "Langsung ke Tangan Anda.",
+    description: "Tanpa menunggu. Unduh seketika setelah pembayaran berhasil, dan langsung terapkan ke dalam karya Anda.",
+    image: "https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?q=80&w=2670&auto=format&fit=crop",
+    label: "Akses"
+  }
+];
 
 export default async function HomePage() {
   // Fetch data from database
@@ -52,6 +81,9 @@ export default async function HomePage() {
   return (
     <main>
       <HeroSection stats={stats} />
+
+      {/* GSAP Scroll Story Section */}
+      <ScrollStory scenes={storyScenes} />
 
       {/* Categories Section */}
       <section className="mx-auto max-w-7xl px-4 py-16">
