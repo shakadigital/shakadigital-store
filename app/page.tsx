@@ -51,10 +51,10 @@ export default async function HomePage() {
     getCategoryStats(),
   ])
 
-  const featuredProducts = featuredResult.success ? featuredResult.data : []
-  const popularProducts = popularResult.success ? popularResult.data : []
-  const stats = statsResult.success ? statsResult.data : { totalProducts: 0, totalVendors: 0, totalDownloads: 0 }
-  const categoryStats = categoryStatsResult.success ? categoryStatsResult.data : []
+  const featuredProducts = (featuredResult.success ? featuredResult.data : []) || []
+  const popularProducts = (popularResult.success ? popularResult.data : []) || []
+  const stats = (statsResult.success ? statsResult.data : null) || { totalProducts: 0, totalVendors: 0, totalDownloads: 0 }
+  const categoryStats = (categoryStatsResult.success ? categoryStatsResult.data : []) || []
 
   // Map category counts
   const categories = defaultCategories.map((cat) => {
